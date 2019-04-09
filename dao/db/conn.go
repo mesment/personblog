@@ -9,9 +9,9 @@ var (
 	DB *sqlx.DB
 )
 
-func Init(dns string) error {
+func Init(driverName,dns string) error {
 	var err error
-	DB, err = sqlx.Open("mysql", dns)
+	DB, err = sqlx.Open(driverName, dns)
 	if err != nil {
 		return err
 	}

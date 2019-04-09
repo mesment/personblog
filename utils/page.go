@@ -5,8 +5,10 @@ import (
 	"strconv"
 )
 
-//GetPage 根据URL获取当前的分页页码
-func GetPage(c *gin.Context) (currentPageNo int, err error) {
+
+//例如url: http://localhost:8080/?page=2
+//GetPageNo: 根据URL获取当前的分页页码，返回页码2
+func GetPageNo(c *gin.Context) (currentPageNo int, err error) {
 	current := c.Query("page")
 	if current == "" {
 		currentPageNo = 1 //隐含显示第一页

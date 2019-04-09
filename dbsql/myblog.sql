@@ -20,6 +20,13 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 
+DROP DATABASE IF EXISTS myblog;
+
+
+CREATE DATABASE myblog default character set utf8 collate utf8_general_ci;
+
+USE myblog;
+
 # Dump of table admins
 # ------------------------------------------------------------
 

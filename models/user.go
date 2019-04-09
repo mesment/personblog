@@ -1,16 +1,8 @@
 package models
 
 
-type  Article struct {
-	Username string
-	Avatar string
-	Praise string
-	Content string
-}
-
-
 type User struct {
-	UserID 		string 	`db:"id"`
-	UserName 	string	`db:name`
-	PassWord	string  `db:password`
+	UserID 		string 	`db:"id"`		//用户id
+	UserName 	string	`db:name`		//用户名
+	PassWord	string  `db:password`	//密码
 }

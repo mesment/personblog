@@ -13,33 +13,38 @@ import (
 )
 
 
+//每页显示条数
 var pageLimit = 5
 
-func ServerError(c *gin.Context,code int,tplname string, err error)  {
-	fmt.Printf("ERROR:%v",err)
-	c.HTML(code,tplname,err)
+//服务器出错
+func ServerError(c *gin.Context, err error)  {
+	fmt.Printf("Error:%v",err)
+	c.HTML(http.StatusInternalServerError,"views/htmls/500.tmpl",err)
+	return
+}
+//Client出错
+func ClientError(c *gin.Context, errmsg string)  {
+	fmt.Printf("%s",errmsg)
+	c.HTML(http.StatusBadRequest,"views/htmls/404.tmpl",errmsg)
 	return
 }
 
-
-
-
-//第一页:隐含 http://localhost:8080/
-//第一页: http://localhost:8080/?page=1
-//第10页:http://localhost:8080/?page=10
+//IndexHandler:显示文章列表首页
+//url第一页:隐含 http://localhost:8080/ ,第二页: http://localhost:8080/?page=2
 func IndexHandler(c *gin.Context) {
-	var page = models.Page{}  //分页对象
-	var currentPage int		//当前页码
 
-	//获取当前页码
-	currentPage,err := utils.GetPage(c)
+	var page = models.Page{}  	//分页对象，用来存放分页信息
+	var currentPage int			//当前页码
+
+	//根据url获取当前页码
+	currentPage,err := utils.GetPageNo(c)
 	if err != nil {
-		ServerError(c,http.StatusInternalServerError,"views/htmls/404.tmpl",err)
+		ServerError(c,err)
 	}
-	//总记录数
+	//文章总记录数
 	totalRecords,err := db.CountArticles()
 	if err != nil {
-		ServerError(c,http.StatusInternalServerError,"views/htmls/404.tmpl",err)
+		ServerError(c,err)
 	}
 	fmt.Printf("文章总条数：%d\n",totalRecords)
 
@@ -51,7 +56,7 @@ func IndexHandler(c *gin.Context) {
 	//查询返回文章列表
 	articleInfoList,err :=db.GetArticleInfosByPageAndLimit(currentPage,pageLimit)
 	if err != nil {
-		ServerError(c,http.StatusInternalServerError,"views/htmls/404.tmpl",err)
+		ServerError(c,err)
 	}
 	var data map[string]interface{} = make(map[string]interface{}, 10)
 	data["article_list"] = articleInfoList
@@ -66,24 +71,17 @@ func UserRegister(c *gin.Context)  {
 	password := c.PostForm("password")
 	//检查用户名是否已存在
 	exist := db.UserExist(username)
-
 	if exist {
 		errmsg :=fmt.Sprintf("用户名%s已存在，请更换一个用户名\n",username)
-		fmt.Printf(errmsg)
-		c.HTML(http.StatusBadRequest,"views/htmls/404.tmpl",errmsg)
+		ClientError(c , errmsg )
 		//c.AbortWithError(http.StatusBadRequest,errors.New(errmsg))
 		return
 	}
-
+	//打印用户信息
 	fmt.Printf("username:%s, passwrod:%s\n",username,password)
 	err :=db.AddUser(username,password)
 	if err != nil {
-		fmt.Printf("ERROR:%v",err)
-		c.HTML(http.StatusInternalServerError,"views/htmls/404.tmpl",err.Error())
-		return
-	}
-	if err != nil {
-		c.HTML(http.StatusInternalServerError,"views/htmls/404.tmpl",err.Error())
+		ServerError(c,err)
 		return
 	}
 	//跳转回首页
@@ -104,13 +102,13 @@ func LoginHandler(c *gin.Context) {
 	password := c.PostForm("password")
 	if username == "" ||password =="" {
 		errmsg = "用户名或密码不能为空"
-		c.HTML(http.StatusInternalServerError,"views/htmls/404.tmpl",errmsg)
+		ClientError(c,errmsg)
 	}
 
 	_,err := db.GetUser(username,password)
 	if err != nil {
 		err := errors.New("登录失败:" + err.Error())
-		c.HTML(http.StatusInternalServerError,"views/htmls/404.tmpl",err)
+		ServerError(c,err)
 	}
 	//跳转回首页
 	c.Redirect(http.StatusFound,"/")
@@ -124,83 +122,83 @@ func ArticleDetail(c *gin.Context)  {
 	articleIdStr := c.Query("article_id")
 	articleId,err := strconv.Atoi(articleIdStr)
 	if err != nil {
-		fmt.Printf("ArticleDetail：获取文章详情失败 %v",err)
-		c.HTML(http.StatusInternalServerError,	"views/htmls/404.tmpl",err)
+		fmt.Printf("解析文章ID失败 %v",err)
+		ServerError(c, err)
 		return
 	}
 
 	articleDetail,err := db.GetArticleDetailByArticleId(articleId)
-	articleDetail.ArticleInfo.Id = articleId
 	if err != nil {
-		fmt.Printf("ArticleDetail：获取文章详情失败 %v",err)
-		c.HTML(http.StatusInternalServerError,	"views/htmls/404.tmpl",err)
+		fmt.Printf("获取文章详情失败 %v",err)
+		ServerError(c,err)
 		return
 	}
 
+	articleDetail.ArticleInfo.Id = articleId
 	commentList,err := db.GetCommentByArticleId(articleId)
-	for _,v :=range commentList {
-		fmt.Println("COMMENT LIST:%v",v)
-	}
 	if err != nil {
-		fmt.Printf("ArticleDetail：获取文章评论失败 %v",err)
+		fmt.Printf("获取文章评论失败 %v",err)
 	}
+
+	//更新文章阅读次数
 	err = db.UpdateViewCount(articleId)
 	if err != nil {
 		fmt.Printf("更新阅读次数失败")
+		//忽略更新错误，继续往下执行
 	}
 	var m map[string]interface{} = make(map[string]interface{},10)
-	m["comments"] = commentList
-	m["article_detail"] = articleDetail
-	//fmt.Printf("map:%v\n",m)
+	m["comments"] = commentList  			//返回评论列表
+	m["article_detail"] = articleDetail		//返回文章详情
+
 	c.HTML(http.StatusOK,"views/htmls/details.tmpl", m)
 
 }
 
 //返回注册页面
 func ShowRegister(c * gin.Context)  {
-	//跳转回首页
 	c.HTML(http.StatusOK,"views/htmls/register.tmpl",nil)
 }
 
 
-//评论
+//Get 评论页面
 func Comment(c *gin.Context)  {
-	//获取文章id参数
+	//获取文章id
 	articleIdStr := c.Query("article_id")
 	articleId,err:= strconv.Atoi(articleIdStr)
 	if err != nil {
-		fmt.Printf("Comment：获取文章评论失败%v",err)
+		fmt.Printf("获取文章评论失败%v",err)
 		return
 	}
 
 	articleDetail,err := db.GetArticleDetailByArticleId(articleId)
 	if err != nil {
-		fmt.Printf("Comment：获取文章信息失败",err)
-		c.HTML(http.StatusInternalServerError,	"views/htmls/404.tmpl",err)
+		fmt.Printf("获取文章信息失败",err)
+		ServerError(c,err)
 		return
 	}
+	//更新详情中的文章ID
 	articleDetail.ArticleInfo.Id = articleId
-	fmt.Printf("ArticleDetial:categoryInfo:%v\n",articleDetail.Category)
-	fmt.Printf("ArticleDetial:ArticleInfo:Id:%d\n",articleDetail.ArticleInfo.Id)
+
 	c.HTML(http.StatusOK,	"views/htmls/comment.tmpl",articleDetail)
 }
 //提交评论
 func PostComment(c *gin.Context)  {
-	//获取文章id
+	//获取文章ID
 	articleIdStr := c.PostForm("article_id")
 	content := c.PostForm("content")
 	articleId,err:= strconv.Atoi(articleIdStr)
 
+	//对评论内容校验
 	if len(content)== 0 || content =="" {
 		err:= fmt.Errorf("评论不能为空！！")
-		c.HTML(http.StatusBadRequest,	"views/htmls/404.tmpl",err)
+		ClientError(c,err.Error())
 		return
 	}
 
 	err = db.AddComment("mesment",content,articleId)
 	if err != nil {
 		fmt.Printf("PostComment：提交评论失败 %v",err)
-		c.HTML(http.StatusInternalServerError,	"views/htmls/500.tmpl",err)
+		ServerError(c,err)
 		return
 	}
 	//更新文章评论次数
@@ -208,7 +206,12 @@ func PostComment(c *gin.Context)  {
 	if err != nil {
 		log.Printf("更新文章评论次数失败")
 	}
+	err = db.UpdateViewCount(articleId)
+	if err != nil {
+		log.Printf("更新文章阅读次数失败")
+	}
 
+	//拼接跳转回文章详情页面
 	detailURL := "/article/detail?article_id=" + articleIdStr
 	c.Redirect(http.StatusFound,detailURL)
 }
@@ -217,8 +220,8 @@ func PostComment(c *gin.Context)  {
 func NewArticle(c *gin.Context)  {
 	categoryList,err := db.GetAllCategory()
 	if err != nil {
-		fmt.Printf("NewArticle Failed %v",err)
-		c.HTML(http.StatusInternalServerError,	"views/htmls/404.tmpl",err)
+		fmt.Printf("获取发表文章页面失败: %v",err)
+		ServerError(c,err)
 		return
 	}
 	fmt.Printf("category:%v",categoryList)
@@ -227,15 +230,15 @@ func NewArticle(c *gin.Context)  {
 
 //发布文章
 func PostNewArticle(c *gin.Context)  {
-	categoryId := c.PostForm("category_id")
-	title := c.PostForm("title")
-	content := c.PostForm("content")
+	categoryId := c.PostForm("category_id")		//文章分类
+	title := c.PostForm("title")    			//文章标题
+	content := c.PostForm("content") 			//文章内容
 
 	cateid,err := strconv.Atoi(categoryId)
 
 	if err != nil {
-		fmt.Printf("新增文章失败,解析文章Id失败.%v",err)
-		c.String(http.StatusInternalServerError,err.Error())
+		fmt.Printf("解析分类Id失败.%v",err)
+		ServerError(c,err)
 		return
 	}
 	err  = db.AddArticleDetail(title,cateid,content)
@@ -245,7 +248,6 @@ func PostNewArticle(c *gin.Context)  {
 		return
 	}
 
-
 	//跳转回首页
 	c.Redirect(http.StatusFound,"/")
 }
@@ -253,12 +255,13 @@ func PostNewArticle(c *gin.Context)  {
 
 
 
-//Get 留言
+//Get 获取留言页面
 func LeaveMessage(c *gin.Context)  {
 
-	msgs, err := db.GetMessage()
+	msgs, err := db.GetMessage(10) 	//返回前50条留言
 	if err != nil {
 		fmt.Println("LeaveMessage: 获取留言列表失败%v",err)
+		ServerError(c,err)
 	}
 	c.HTML(http.StatusOK,"views/htmls/message.tmpl",msgs)
 
@@ -271,16 +274,17 @@ func SubmitMessage(c *gin.Context) {
 	msgContent := c.PostForm("content")
 	if len(msgContent)== 0 || msgContent =="" {
 		err := fmt.Errorf("留言不能为空！！")
-		c.HTML(http.StatusInternalServerError,	"views/htmls/404.tmpl",err)
+		ClientError(c,err.Error())
 		return
 	}
-	log.Printf("SubmitMessage: msg:%s\n", msgContent)
 	err := db.AddMessage(username, msgContent)
 	if err != nil {
-			fmt.Printf("添加留言失败,%v", err)
-			c.HTML(http.StatusInternalServerError, "views/htmls/404.tmpl", err)
+			fmt.Printf("提交留言失败,%v", err)
+			ServerError(c,err)
 			return
 	}
+
+	//刷新页面
 	c.Redirect(http.StatusFound,"/leave/message")
 }
 

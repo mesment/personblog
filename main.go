@@ -8,25 +8,27 @@ import (
 
 func main() {
 
-	dns := "root:personblog@110@(localhost:3306)/myblog?charset=utf8mb4&parseTime=true"
-	//dns := "root:root@tcp(localhost:3306)/blogger?parseTime=true"
-	err := db.Init(dns)
+	//设置数据库连接信息(mysql:3306),其中mysql是在docker中运行时mysql的容器名
+	dns := "root:personblog@110@(mysql:3306)/myblog?charset=utf8mb4&parseTime=true"
+
+	err := db.Init("mysql",dns)
 	if err != nil {
 		panic(err)
 	}
 	defer db.DB.Close()
-	router := gin.Default()
 
+	router := gin.Default()
 	router.Static("/views", "./views")
 	router.LoadHTMLGlob("views/htmls/*")
 
+	//首页
 	router.GET("/", controllers.IndexHandler)
 
 	//登录
 	router.GET("/user/login", controllers.ShowLogin)
 	router.POST("/user/login", controllers.LoginHandler)
 
-	//注册
+	//用户注册
 	router.POST("/user/register", controllers.UserRegister)
 	router.GET("/user/register", controllers.ShowRegister)
 
@@ -41,10 +43,11 @@ func main() {
 	router.GET("/article/comment", controllers.Comment)
 	router.POST("/article/comment", controllers.PostComment)
 
-
+	//留言
 	router.GET("/leave/message", controllers.LeaveMessage)
 	router.POST("/leave/message", controllers.SubmitMessage)
 
+	//关于
 	router.GET("/about/me", controllers.AboutMe)
 
 	router.Run() // listen and serve on 0.0.0.0:8080
