@@ -1,0 +1,114 @@
+{{ define "views/htmls/login.tmpl"}}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>轻博客-登录/注册</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {{template "link.html" }}
+</head>
+
+<body class="lay-blog">
+<div class="header">
+    <div class="header-wrap">
+        <h1 class="logo pull-left">
+            <a href="/">
+                <img src="/views/res/static/images/logo.png" alt="" class="logo-img">
+            </a>
+        </h1>
+<div class="blog-nav pull-right">
+    <ul class="layui-nav pull-left">
+        <li class="layui-nav-item layui-this"><a href=/>首页</a></li>
+        <li class="layui-nav-item"><a href=/leave/message>留言</a></li>
+        <li class="layui-nav-item"><a href=/about/me>关于</a></li>
+    </ul>
+    <a href="/user/login" class="personal pull-left">
+        <i class="layui-icon layui-icon-username"></i>
+    </a>
+</div>
+<div class="mobile-nav pull-right" id="mobile-nav">
+    <a href="javascript:;">
+        <i class="layui-icon layui-icon-more"></i>
+    </a>
+</div>
+</div>
+<ul class="pop-nav" id="pop-nav">
+    <li><a href="/">首页</a></li>
+    <li><a href="/leave/me">留言</a></li>
+    <li><a href="/about/me">关于</a></li>
+
+</ul>
+
+</div>
+
+<div class="container-wrap">
+    <div class="container">
+        <div class="contar-wrap">
+            <h4 class="item-title">
+                <p><i class="layui-icon layui-icon-speaker"></i>公告：<span>欢迎到来</span></p>
+            </h4>
+            <div class="item">
+                <div class="layui-container fly-marginTop">
+                    <div class="fly-panel fly-panel-user" pad20>
+                        <div class="layui-tab layui-tab-brief" lay-filter="user">
+                            <ul class="layui-tab-title">
+                                <li class="layui-this"><a href="/user/login">登录</a></li>
+                                <li><a href="/user/register">注册</a></li>
+
+                            </ul>
+                            <div class="layui-form layui-tab-content" id="LAY_ucm" style="padding: 20px 0;">
+                                <div class="layui-tab-item layui-show">
+                                    <div class="layui-form layui-form-pane">
+                                        <form method="post">
+                                            <div class="layui-form-item">
+                                                <label for="L_email" class="layui-form-label">用户名</label>
+                                                <div class="layui-input-inline">
+                                                    <input type="text" id="L_loginName" name="loginName" required lay-verify="required" autocomplete="off" class="layui-input">
+                                                </div>
+                                                <div class="layui-form-mid layui-word-aux"></div>
+                                            </div>
+                                            <div class="layui-form-item">
+                                                <label for="L_pass" class="layui-form-label">密码</label>
+                                                <div class="layui-input-inline">
+                                                    <input type="password" id="L_pass" name="password" required lay-verify="required" autocomplete="off" class="layui-input">
+                                                </div>
+                                            </div>
+                                            <div class="layui-form-item">
+                                                <button class="layui-btn layui-btn-normal" lay-filter="*" lay-submit>立即登录</button> <span style="padding-left:20px;"> <a  hidden href="/user/forget">忘记密码？</a> </span>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<div class="footer">
+    <p>
+        <span>&copy; 2019 mesment</span>
+        <span><a href="http://www.layui.com" target="_blank">layui.com</a></span>
+        <span>MIT license</span>
+    </p>
+    <p><span>人生就是一场修行</span></p>
+</div>
+<script src="/views/res/layui/layui.js"></script>
+<script>
+    layui.config({
+        base: '/views/res/static/js/'
+    }).use('blog');
+</script>
+
+</body>
+
+</html>
+
+{{ end }}

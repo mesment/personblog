@@ -1,0 +1,141 @@
+{{ define  "views/htmls/newarticle.tmpl"}}
+<!DOCTYPE html>
+<!-- saved from url=(0030)https://fly.layui.com/jie/add/ -->
+<html>
+ <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>轻博客-发表文章</title>
+  <link rel="stylesheet" href="/views/newarticle_files/font_24081_qs69ykjbea.css" />
+  <link rel="stylesheet" href="/views/newarticle_files/layui.css" />
+  <link rel="stylesheet" href="/views/newarticle_files/global.css" charset="utf-8" />
+  <script src="/views/newarticle_files/hm.js"></script>
+  <link id="layuicss-layer" rel="stylesheet" href="/views/newarticle_files/layer.css" media="all" />
+ </head>
+ <body>
+  <div class="fly-header layui-bg-black"> 
+   <div class="layui-container"> 
+    <a class="fly-logo" href=""> <img src="/views/newarticle_files/logo.png" alt="layui" /> </a>
+    <ul class="layui-nav fly-nav layui-hide-xs"> 
+     <li class="layui-nav-item"> <a href=""><i class="iconfont icon-jiaoliu"></i>交流</a> </li>
+     <li class="layui-nav-item"> <a href="javascript:;"><i class="iconfont icon-chanpin" style="top: 1px;"></i>专区<span class="layui-nav-more"></span></a> 
+      <dl class="layui-nav-child fly-nav-child"> 
+       <dd>
+        <a href="https://fly.layui.com/vipclub/list/layuiadmin/">layuiAdmin</a>
+       </dd> 
+       <hr /> 
+       <dd>
+        <a href="https://fly.layui.com/vipclub/list/layim/">LayIM</a>
+       </dd> 
+      </dl> <span class="layui-badge-dot" style="margin: -5px 10px 0; right: 0;"></span> </li> 
+     <li class="layui-nav-item"> <a href=""><i class="iconfont icon-ui"></i>框架</a> </li>
+     <span class="layui-nav-bar" style="left: 0px; top: 55px; width: 0px; opacity: 0;"></span>
+    </ul> 
+    <ul class="layui-nav fly-nav-user"> 
+     <li class="layui-nav-item"> <a class="fly-nav-avatar" href="" id="LAY_header_avatar"> <cite class="layui-hide-xs">叶雷</cite> <img src="/views/newarticle_files/g" /> <span class="layui-nav-more"></span></a>
+      <dl class="layui-nav-child"> 
+       <dd>
+        <a href="">用户中心</a>
+       </dd> 
+       <dd>
+        <a href="">基本设置</a>
+       </dd> 
+       <hr /> 
+       <dd>
+        <a href="">我的消息</a>
+       </dd> 
+       <dd>
+        <a href="">已购产品</a>
+       </dd> 
+       <dd>
+        <a href="">我的主页</a>
+       </dd> 
+       <hr style="margin: 5px 0;" /> 
+       <dd>
+        <a href="https://fly.layui.com/user/logout/" style="text-align: center;">退出</a>
+       </dd> 
+      </dl> </li> 
+     <span class="layui-nav-bar"></span>
+    </ul> 
+   </div>
+  </div>
+  <div class="layui-container fly-marginTop"> 
+   <div class="fly-panel" pad20="" style="padding-top: 5px;"> 
+    <div class="layui-form layui-form-pane"> 
+     <div class="layui-tab layui-tab-brief" lay-filter="user"> 
+      <ul class="layui-tab-title"> 
+       <li class="layui-this">发表文章</li> 
+      </ul> 
+      <div class="layui-form layui-tab-content" id="LAY_ucm" style="padding: 20px 0;"> 
+       <div class="layui-tab-item layui-show"> 
+        <form action="/article/new" method="post">
+         <div class="layui-row layui-col-space15 layui-form-item"> 
+          <div class="layui-col-md3"> 
+           <label class="layui-form-label">文章分类</label> 
+           <div class="layui-input-block"> 
+            <select lay-verify="required" name="category_id" lay-filter="column">
+            <option value=""></option>
+             {{ range .}}
+             <option value={{.Id}}>{{.CategoryName}}</option>
+              {{end}}
+            </select>
+
+           </div> 
+          </div>
+          <div class="layui-col-md9"> 
+           <label for="L_title" class="layui-form-label">标题</label> 
+           <div class="layui-input-block"> 
+            <input type="text" id="L_title" name="title" required="" lay-verify="required" autocomplete="off" class="layui-input" /> 
+           </div> 
+          </div> 
+         </div> 
+         <div class="layui-form-item layui-form-text"> 
+          <div class="layui-input-block">
+           <div class="layui-unselect fly-edit">
+            <span type="face" title="表情"><i class="iconfont icon-yxj-expression" style="top: 1px;"></i></span>
+            <span type="picture" title="图片：img[src]"><i class="iconfont icon-tupian"></i></span>
+            <span type="href" title="超链接格式：a(href)[text]"><i class="iconfont icon-lianjie"></i></span>
+            <span type="quote" title="引用"><i class="iconfont icon-yinyong" style="top: 1px;"></i></span>
+            <span type="code" title="插入代码" class="layui-hide-xs"><i class="iconfont icon-emwdaima" style="top: 1px;"></i></span>
+            <span type="hr" title="水平线">hr</span>
+            <span type="preview" title="预览"><i class="iconfont icon-yulan1"></i></span>
+           </div> 
+           <textarea id="L_content" name="content" required="" lay-verify="required" placeholder="详细描述" class="layui-textarea fly-editor" style="height: 260px;"></textarea> 
+          </div> 
+         </div> 
+         <div class="layui-form-item"> 
+          <button class="layui-btn" lay-filter="*" lay-submit="">立即发布</button> 
+         </div> 
+        </form> 
+       </div> 
+      </div> 
+     </div> 
+    </div> 
+   </div>
+  </div>
+  <div class="fly-footer"> 
+   <p>
+    <span>&copy; 2019 mesment</span>
+    <span>MIT license</span>
+   </p>
+  </div>
+  <script src="/views/res/layui/layui.js"></script>
+  <script>layui.cache.page ='jie';layui.cache.user ={username:'叶雷' ,uid:36855504 ,avatar:'//thirdqq.qlogo.cn/g?b=oidb&k=GsvMZ1FJWwf0phHMlJeLuQ&s=100' ,experience:105 ,sum:0 ,vip:0 ,sex:''};layui.config({version:"1553762161509"}).extend({'fly':'//res.layui.com/static/lay/modules/fly/index'}).use('fly');</script>
+  <script>var _hmt =_hmt ||[];(function() {var hm =document.createElement("script");hm.src ="https://hm.baidu.com/hm.js?d214947968792b839fd669a4decaaffc";var s =document.getElementsByTagName("script")[0];s.parentNode.insertBefore(hm,s);})();</script>
+
+  <script>
+        layui.use('form', function(){
+         var form = layui.form;
+     
+         //各种基于事件的操作
+        });
+   </script>
+  <ul class="layui-fixbar">
+   <li class="layui-icon" lay-type="bar1" style="background-color:#009688"></li>
+   <li class="layui-icon layui-fixbar-top" lay-type="top" style="background-color:#009688"></li>
+  </ul>
+ </body>
+</html>
+
+
+{{ end }}
