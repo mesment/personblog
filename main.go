@@ -55,7 +55,7 @@ func main() {
 
 	//设置数据库连接信息(mysql:3306),其中mysql是docker里mysql的容器名
 	//在本地主机上运行mysql时改为localhost
-	dns := "root:Tsyw@110@(localhost:3307)/myblog?charset=utf8mb4&parseTime=true"
+	dns := "root:personblog@110@(mysql:3307)/myblog?charset=utf8mb4&parseTime=true"
 
 	err := db.Init("mysql", dns)
 	if err != nil {
