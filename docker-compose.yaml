@@ -1,0 +1,33 @@
+version: '3.1'
+services:
+
+  personblog:
+
+    build: ./Dockerfile
+    container_name: personblog
+    ports:
+      - 8080:8080
+    networks:
+      - blog_network
+    depends_on:
+      - "mysql"
+
+  mysql:
+    image: mysql:5.7
+    restart: always
+    container_name: mysql
+    ports:
+      - 3306:3306
+    volumes:
+      - $PWD/conf:/etc/mysql/conf.d
+      - $PWD/logs:/logs
+      - $pwd/data:/var/lib/mysql
+      - /Users/tommy/data/myscript/:/docker-entrypoint-initdb.d/
+    networks:
+      - blog_network
+    environment:
+      MYSQL_ROOT_PASSWORD: "Tsywn@110"
+
+networks:
+  blog_network:
+    driver: bridge
