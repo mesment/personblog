@@ -31,6 +31,9 @@ func UserRegister(c *gin.Context)  {
 	c.Redirect(http.StatusFound ,"/")
 }
 
+
+
+
 //返回注册页面
 func ShowRegister(c * gin.Context)  {
 	c.HTML(http.StatusOK,"views/htmls/register.tmpl",nil)

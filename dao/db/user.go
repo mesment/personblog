@@ -1,6 +1,7 @@
 package db
 
 import (
+	"github.com/mesment/personblog/models"
 	"errors"
 )
 
@@ -12,26 +13,23 @@ func AddUser(loginName string, pwd string) error {
 	return err
 }
 
-//根据用户名查找用户,bool返回用户名是否存在，error返回具体的错误信息
-func GetUser(loginName string,password string) (bool,error) {
+//根据用户名查找用户,如果用户存在返回用户，error返回具体的错误信息
+func GetUser(loginName string) (user *models.User, err error) {
 	//判断用户名是否存在
 	exist := UserExist(loginName)
 	if !exist {
-		return false, errors.New("用户不存在")
+		user = nil
+		err = errors.New("用户不存在")
+		return
 	}
-	query :=`SELECT password from users where name=? limit 1`
+	query :=`SELECT id,name,password from users where name=? limit 1`
 
-	var pwd string
-	err := DB.Get(&pwd,query,loginName)
+	user = &models.User{}
+	err = DB.Get(user,query,loginName)
 	if err != nil {
-		return exist,err
+		user = nil
 	}
-	//用户名密码都正确
-	if pwd == password {
-		return exist,nil
-	}
-
-	return exist, errors.New("用户名密码错误")
+	return
 }
 
 //判断用户名是否已存在

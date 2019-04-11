@@ -35,17 +35,23 @@ func LoginHandler(c *gin.Context) {
 	}
 	log.Printf("username:%s,password:%s\n",username,password)
 
-	_, err := db.GetUser(username, password)
+	//根据用户名查找用户
+	user, err := db.GetUser(username)
+	log.Println("Find user:",user)
+
 	if err != nil {
-		err := errors.New("登录失败:" + err.Error())
+		log.Println(err)
 		ServerError(c, err)
+	}
+	if user == nil ||user.PassWord != password {
+		ServerError(c, errors.New("用户名密码错误"))
 	}
 
 	//登录成功,设置token
 	authjwt:= auth.JWT{}
 
 	//声明JWT token有效时间1个小时
-	expirationTime := time.Now().Add(3600 * time.Second)
+	expirationTime := time.Now().Add(60 * time.Second)
 	//创建JWT claims,包含用户名和超时时间
 	claims := auth.CustomClaims{
 		Username:username,
@@ -69,7 +75,14 @@ func LoginHandler(c *gin.Context) {
 
 	//跳转回首页
 	//c.String(http.StatusOK,"登录成功")
-	c.Redirect(http.StatusOK, "/")
+	//c.Redirect(http.StatusOK, "/")
+	m := make(map[string] interface{})
+	m["user"] = user
+	m["islogin"] = true
+
+
+	c.HTML(http.StatusFound,"views/htmls/welcome.tmpl",m)
+
 }
 
 

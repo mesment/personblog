@@ -97,8 +97,8 @@ func (j *JWT) NewToken(username string) (t *JWT, err error) {
 }
 
 //解析Token
-func (j *JWT) ParseToken(tokenString string) (*CustomClaims, error) {
-	token, err := jwt.ParseWithClaims(tokenString, &CustomClaims{}, func(token *jwt.Token) (interface{}, error) {
+func (j *JWT) ParseToken(tokenString string) (jwt.MapClaims, error) {
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return JWTKey, nil
 	})
 	if err != nil {
@@ -123,9 +123,7 @@ func (j *JWT) ParseToken(tokenString string) (*CustomClaims, error) {
 		}
 	}
 
-	if claims, ok := token.Claims.(*CustomClaims); ok && token.Valid {
-		jwt.TimeFunc = time.Now
-		claims.StandardClaims.ExpiresAt = time.Now().Add(1 * time.Hour).Unix()
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		return claims, nil
 	}
 	return nil, TokenInvalid

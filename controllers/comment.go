@@ -2,53 +2,23 @@ package controllers
 
 import (
 	"fmt"
+	"github.com/gin-gonic/gin"
+	"github.com/mesment/personblog/dao/db"
 	"log"
 	"net/http"
 	"strconv"
-	"github.com/dgrijalva/jwt-go"
-	"github.com/gin-gonic/gin"
-	"github.com/mesment/personblog/auth"
-	"github.com/mesment/personblog/dao/db"
+	"github.com/mesment/personblog/models"
 )
 
 //Get 评论页面
 func Comment(c *gin.Context)  {
-
-	//通过从cookie中取出token来进行验证用户是否已登录
-	tokenStr, err := c.Cookie("token")
-	if err != nil {
-		if err == http.ErrNoCookie {
-			//如果没有设置cookie，返回未授权
-			log.Printf("没有权限，请先登录,%v",err)
-			c.HTML(http.StatusUnauthorized,"views/htmls/500.tmpl",err)
-			return
-		}
-	}
-
-	log.Printf("tokenstr:%s\n",tokenStr)
-
-	// Initialize a new instance of `Claims`
-	claims := &auth.CustomClaims{}
-
-	tkn, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (interface{}, error) {
-		//return auth.VerifyKey, nil
-		return auth.JWTKey, nil
-	})
-	if !tkn.Valid {
-		c.HTML(http.StatusUnauthorized,"views/htmls/500.tmpl",err)
-		return
-	}
-	if err != nil {
-		if err == jwt.ErrSignatureInvalid {
-			c.HTML(http.StatusUnauthorized,"views/htmls/500.tmpl",err)
-			return
-		}
-		c.HTML(http.StatusBadRequest,"views/htmls/500.tmpl",err)
-		return
-	}
-
-	//终于通过验证了
 	//继续获取文章id
+	//获取登录状态用户名,用户名
+	var login,username = GetDefultUserName(c)
+
+	var user = models.User{
+		UserName:username,
+	}
 	articleIdStr := c.Query("article_id")
 	articleId,err:= strconv.Atoi(articleIdStr)
 	if err != nil {
@@ -64,11 +34,19 @@ func Comment(c *gin.Context)  {
 	}
 	//更新详情中的文章ID
 	articleDetail.ArticleInfo.Id = articleId
-
-	c.HTML(http.StatusOK,	"views/htmls/comment.tmpl",articleDetail)
+	data:= make(map[string]interface{})
+	data["detial"] = articleDetail
+	data["islogin"] = login
+	data["user"] = user
+	c.HTML(http.StatusOK,	"views/htmls/comment.tmpl",data)
 }
+
+
 //提交评论
 func PostComment(c *gin.Context)  {
+	//获取用户名
+	var _, user = GetDefultUserName(c)
+
 	//获取文章ID
 	articleIdStr := c.PostForm("article_id")
 	content := c.PostForm("content")
@@ -81,7 +59,8 @@ func PostComment(c *gin.Context)  {
 		return
 	}
 
-	err = db.AddComment("mesment",content,articleId)
+	//将评论添加到数据库
+	err = db.AddComment(user,content,articleId)
 	if err != nil {
 		fmt.Printf("PostComment：提交评论失败 %v",err)
 		ServerError(c,err)
@@ -100,4 +79,5 @@ func PostComment(c *gin.Context)  {
 	//拼接跳转回文章详情页面
 	detailURL := "/article/detail?article_id=" + articleIdStr
 	c.Redirect(http.StatusFound,detailURL)
+
 }

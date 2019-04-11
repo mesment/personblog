@@ -33,6 +33,9 @@
 					</ul>
 					<a href="/user/login" class="personal pull-left">
 						<i class="layui-icon layui-icon-username"></i>
+						{{if .islogin }}
+							<span style="color: #fff;">{{.user.UserName}}</span>
+						{{end }}
 					</a>
 				</div>
 				<div class="mobile-nav pull-right" id="mobile-nav">
@@ -53,13 +56,13 @@
 					<div class="contar-wrap">
 						<div class="item">
 							<div class="item-box  layer-photos-demo1 layer-photos-demo">
-								<h3>{{.Title}}</h3>
-								<h5>发布于：<span>{{.CreateTime}}</span></h5>
+								<h3>{{.detial.Title}}</h3>
+								<h5>发布于：<span>{{.detial.CreateTime}}</span></h5>
 								<pre>
-								<p>{{.Content}}</p>
+								<p>{{.detial.Content}}</p>
 								</pre>
 								<div class="count layui-clear">
-									<span class="pull-left">阅读 <em>{{.ViewCount}}</em></span>
+									<span class="pull-left">阅读 <em>{{.detial.ViewCount}}</em></span>
 									<span class="pull-right like"><i class="layui-icon layui-icon-praise"></i><em>999</em></span>
 								</div>
 							</div>
@@ -72,7 +75,7 @@
 								<button class="layui-btn layui-btn-normal" lay-filter="*" >提交</button> <span style="padding-left:20px;"></span>
 							</div>
 							<div>
-								<input type="hidden" name="article_id" id="article_id" value="{{.ArticleInfo.Id}}" >
+								<input type="hidden" name="article_id" id="article_id" value="{{.detial.ArticleInfo.Id}}" >
 							</div>
 						</form>
 					</div>

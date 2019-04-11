@@ -31,6 +31,9 @@
 					</ul>
 					<a href="/user/login" class="personal pull-left">
 						<i class="layui-icon layui-icon-username"></i>
+						{{if .islogin }}
+							<span style="color: #fff;">{{.user.UserName}}</span>
+						{{end }}
 					</a>
 				</div>
 				<div class="mobile-nav pull-right" id="mobile-nav">
@@ -60,7 +63,7 @@
 					<div id="LAY-msg-box">
 						<div class="info-box">
 							<div class="info-item">
-								{{ range .}}
+								{{ range .msgs}}
 								<img class="info-img" src="/views/res/static/images/info-img.png" alt="">
 								<div class="info-text">
 									<p class="title count">

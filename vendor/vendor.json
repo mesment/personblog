@@ -69,40 +69,40 @@
 			"revisionTime": "2018-08-30T10:17:45Z"
 		},
 		{
-			"checksumSHA1": "NgpMZVv15OXt/VoPJCyke6zBybg=",
+			"checksumSHA1": "eQmYlSKLp0rEm7txWtdGvQ1hD/4=",
 			"path": "github.com/mesment/personblog",
-			"revision": "e88e34c9a1f1fd6982f37792dd5f9922d8ad99b8",
-			"revisionTime": "2019-04-10T03:42:02Z"
+			"revision": "fbf645dbd6bcfbea0b194663703867e34e730455",
+			"revisionTime": "2019-04-10T19:27:59Z"
 		},
 		{
-			"checksumSHA1": "a+9VDkrQy86t/yVePZkgkukyCTc=",
+			"checksumSHA1": "Lt2kcNreJLH06hC7qGM9uGuiNhI=",
 			"path": "github.com/mesment/personblog/auth",
-			"revision": "e88e34c9a1f1fd6982f37792dd5f9922d8ad99b8",
-			"revisionTime": "2019-04-10T03:42:02Z"
+			"revision": "fbf645dbd6bcfbea0b194663703867e34e730455",
+			"revisionTime": "2019-04-10T19:27:59Z"
 		},
 		{
-			"checksumSHA1": "+IHua8KAX9EWvp6QNE6N/xR0HUg=",
+			"checksumSHA1": "FIjUy1xerxjGtb+pFGb9cCd48O8=",
 			"path": "github.com/mesment/personblog/controllers",
-			"revision": "e88e34c9a1f1fd6982f37792dd5f9922d8ad99b8",
-			"revisionTime": "2019-04-10T03:42:02Z"
+			"revision": "fbf645dbd6bcfbea0b194663703867e34e730455",
+			"revisionTime": "2019-04-10T19:27:59Z"
 		},
 		{
-			"checksumSHA1": "6UJEyB1txrIDg5/x++PCliymc1k=",
+			"checksumSHA1": "/3Jb3vVn7DeFxtv16F7lo84jwdQ=",
 			"path": "github.com/mesment/personblog/dao/db",
-			"revision": "e88e34c9a1f1fd6982f37792dd5f9922d8ad99b8",
-			"revisionTime": "2019-04-10T03:42:02Z"
+			"revision": "fbf645dbd6bcfbea0b194663703867e34e730455",
+			"revisionTime": "2019-04-10T19:27:59Z"
 		},
 		{
-			"checksumSHA1": "RIkkgLJcKojP5C8qiGx1+qsUiu0=",
+			"checksumSHA1": "q+o38e3KCpItZ1KUnKQdtjuiz5c=",
 			"path": "github.com/mesment/personblog/models",
-			"revision": "e88e34c9a1f1fd6982f37792dd5f9922d8ad99b8",
-			"revisionTime": "2019-04-10T03:42:02Z"
+			"revision": "fbf645dbd6bcfbea0b194663703867e34e730455",
+			"revisionTime": "2019-04-10T19:27:59Z"
 		},
 		{
 			"checksumSHA1": "P2roeRauiCjk0UF7efCliOXYms8=",
 			"path": "github.com/mesment/personblog/utils",
-			"revision": "e88e34c9a1f1fd6982f37792dd5f9922d8ad99b8",
-			"revisionTime": "2019-04-10T03:42:02Z"
+			"revision": "fbf645dbd6bcfbea0b194663703867e34e730455",
+			"revisionTime": "2019-04-10T19:27:59Z"
 		},
 		{
 			"checksumSHA1": "j/aP/n+qaMNBUou/a2m2LDJ5q3Q=",

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/mesment/personblog/auth"
@@ -35,16 +36,18 @@ func TestAuth() gin.HandlerFunc {
 		tkn, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (interface{}, error) {
 			return auth.JWTKey , nil
 		})
+		newErr := errors.New("请先登录")
 		if !tkn.Valid {
-			c.HTML(http.StatusUnauthorized,"views/htmls/404.tmpl",err)
+
+			c.HTML(http.StatusUnauthorized,"views/htmls/404.tmpl",newErr)
 			return
 		}
 		if err != nil {
 			if err == jwt.ErrSignatureInvalid {
-				c.HTML(http.StatusUnauthorized,"views/htmls/404.tmpl",err)
+				c.HTML(http.StatusUnauthorized,"views/htmls/404.tmpl",newErr)
 				return
 			}
-			c.HTML(http.StatusBadRequest,"views/htmls/404.tmpl",err)
+			c.HTML(http.StatusBadRequest,"views/htmls/404.tmpl",newErr)
 			return
 		}
 		c.Next()
@@ -55,7 +58,7 @@ func main() {
 
 	//设置数据库连接信息(mysql:3306),其中mysql是docker里mysql的容器名
 	//在本地主机上运行mysql时改为localhost
-	dns := "root:Tsyw@110@(localhost:3307)/myblog?charset=utf8mb4&parseTime=true"
+	dns := "root:personblog@(localhost:3306)/myblog?charset=utf8mb4&parseTime=true"
 
 	err := db.Init("mysql", dns)
 	if err != nil {
