@@ -2,14 +2,18 @@ package controllers
 
 import (
 	"fmt"
-	"net/http"
 	"github.com/gin-gonic/gin"
+	"github.com/mesment/personblog/auth"
 	"github.com/mesment/personblog/dao/db"
-
+	"log"
+	"net/http"
+	"time"
+	"github.com/mesment/personblog/models"
 )
 
 //用户注册
 func UserRegister(c *gin.Context)  {
+
 	var username string = c.PostForm("loginName")
 	password := c.PostForm("password")
 	//检查用户名是否已存在
@@ -22,11 +26,37 @@ func UserRegister(c *gin.Context)  {
 	}
 	//打印用户信息
 	fmt.Printf("username:%s, passwrod:%s\n",username,password)
+	//将用户信息添加到数据库
 	err :=db.AddUser(username,password)
 	if err != nil {
 		ServerError(c,err)
 		return
 	}
+
+	//设置token
+	authjwt:= auth.JWT{}
+	//声明JWT token有效时间单位为3600秒
+	expirationTime := time.Now().Add(3600 * time.Second).Unix()
+	//创建token
+	tokenStr,err := CreateToken(&authjwt,username,expirationTime)
+
+	//如果创建token失败，则跳转到登录界面让用户登录
+	if err != nil {
+		log.Println(err)
+		c.Redirect(http.StatusFound ,"/user/login")
+		return;
+	}
+
+	//创建成功将token写入到cookie，cookie超时时间等于token超时时间
+	c.SetCookie("token",tokenStr,int(expirationTime),
+		"/","",false,true)
+
+	var user = models.User{
+		UserName:username,
+	}
+	m := make(map[string] interface{})
+	m["user"] = user
+	m["islogin"] = true
 	//跳转回首页
 	c.Redirect(http.StatusFound ,"/")
 }

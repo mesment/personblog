@@ -11,9 +11,6 @@ import (
 	"time"
 )
 
-type Response struct {
-	Text string `json:"text"`
-}
 
 
 //返回用户登录页面
@@ -51,7 +48,7 @@ func LoginHandler(c *gin.Context) {
 	authjwt:= auth.JWT{}
 
 	//声明JWT token有效时间1个小时
-	expirationTime := time.Now().Add(60 * time.Second)
+	expirationTime := time.Now().Add(3600 * time.Second)
 	//创建JWT claims,包含用户名和超时时间
 	claims := auth.CustomClaims{
 		Username:username,
@@ -75,11 +72,9 @@ func LoginHandler(c *gin.Context) {
 
 	//跳转回首页
 	//c.String(http.StatusOK,"登录成功")
-	//c.Redirect(http.StatusOK, "/")
 	m := make(map[string] interface{})
 	m["user"] = user
 	m["islogin"] = true
-
 
 	c.HTML(http.StatusFound,"views/htmls/welcome.tmpl",m)
 

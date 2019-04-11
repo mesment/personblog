@@ -3,7 +3,7 @@ services:
 
   personblog:
 
-    build: ./Dockerfile
+    build: .
     container_name: personblog
     ports:
       - 8080:8080
@@ -17,16 +17,18 @@ services:
     restart: always
     container_name: mysql
     ports:
-      - 3306:3306
+      - 3307:3306
     volumes:
-      - $PWD/conf:/etc/mysql/conf.d
-      - $PWD/logs:/logs
-      - $pwd/data:/var/lib/mysql
+      - /Users/tommy/data/conf:/etc/mysql/conf.d
+      - /Users/tommy/logs:/logs
+      - /Users/tommy/data:/var/lib/mysql
       - /Users/tommy/data/myscript/:/docker-entrypoint-initdb.d/
     networks:
       - blog_network
     environment:
       MYSQL_ROOT_PASSWORD: "Tsywn@110"
+      MYSQL_USER: root
+
 
 networks:
   blog_network:

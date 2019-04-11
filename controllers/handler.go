@@ -1,8 +1,10 @@
 package controllers
 
 import (
+	"github.com/mesment/personblog/models"
 	"errors"
 	"fmt"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/mesment/personblog/auth"
 	"log"
@@ -25,30 +27,84 @@ func ClientError(c *gin.Context, errmsg string)  {
 	return
 }
 
-//从token中获取用户名，如果获取失败返回默认Guest用户
-func GetDefultUserName(c *gin.Context) (login bool, name string ){
-	var user = "Guest"	//默认用户名
+func UserHandler(c *gin.Context)  {
+	username,islogin := IsLogin(c)
 
-	//通过从cookie中取出token来查找用户名
-	tokenStr, err := c.Cookie("token")
-
-	// 解析token获取用户名
-	username, err := GetUserNameFromToken(tokenStr)
-	if err != nil {
-		log.Println(err)  	//如果获取用户名失败，使用默认用户名
-		login = false 	 	//登录状态未登录
-	} else {
-		user = username   	//更新用户名
-		login = true	  	//登录状态已登录
+	//已登录，跳转到欢迎界面
+	if islogin {
+		user := models.User{
+			UserName:username,
+		}
+		m := make(map[string] interface{})
+		m["user"] = user
+		m["islogin"] = true
+		c.HTML(http.StatusFound,"views/htmls/welcome.tmpl",m)
 	}
 
-	return login ,user
+	//未登录，跳转到登录界面
+	c.Redirect(http.StatusFound,"/user/login")
+
 }
 
+
+//从cookie中找到用户名则认为已登录，否则未登录
+func IsLogin(c *gin.Context) (string,bool) {
+
+	//通过从cookie中取出token来查找用户名
+	token, err := c.Cookie("token")
+	if err != nil {
+		return "",false //状态未登录
+	}
+	name, err := GetUserNameFromToken(token)
+	if err != nil {
+		return "",false  //状态未登录
+	}
+
+	//查找成功，已登录
+	return name,true
+}
+
+//从token中获取用户名，获取失败返回默认Guest用户
+func GetDefultUserName(c *gin.Context) (login bool, name string ){
+	var defaultName = "Guest"	//默认用户名
+
+	name,login = IsLogin(c)
+	if !login {
+		name = defaultName
+	}
+	return
+}
+
+//创建token
+func CreateToken(authjwt *auth.JWT, username string , exptime int64 ) (token string, err error){
+	//设置 token有效时间
+	expirationTime := exptime
+
+	//创建JWT claims,包含用户名和超时时间
+	claims := auth.CustomClaims{
+		Username:username,
+		StandardClaims:jwt.StandardClaims{
+			ExpiresAt:expirationTime,
+		},
+	}
+	log.Printf("claims: %v",claims)
+
+	//创建token
+	token, err = authjwt.CreateToken(claims)
+	if err != nil {
+		err = fmt.Errorf("Token签名失败%v",err)
+		return "", err
+	}
+	log.Printf("Token:%s",token)
+
+	return token,nil
+}
+
+//从token中获取用户名，成功返回用户名，失败返回错误信息
 func GetUserNameFromToken(tokenStr string) (username string ,err error) {
-	var find = false  //是否找到
 	// 解析token
 	authjwt := auth.JWT{}
+
 	claims,err := authjwt.ParseToken(tokenStr)
 	if err != nil {
 		return
@@ -58,13 +114,10 @@ func GetUserNameFromToken(tokenStr string) (username string ,err error) {
 		log.Printf("key:%v,value:%v",key, value)
 		if key == "username" {
 			username =  value.(string) //token中的用户名
-			find = true
-			break
+			return
 		}
 	}
-	if find {
-		return
-	}
+
 	err = errors.New("Token里没有用户名字段")
 	return
 }

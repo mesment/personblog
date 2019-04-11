@@ -16,33 +16,28 @@ func TestAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		//通过从cookie中取出token来进行验证用户是否已登录
 		tokenStr, err := c.Cookie("token")
-		//t := c.Request.Cookie("token")
-		//str:=t.Value
-
 		if err != nil {
 			if err == http.ErrNoCookie {
-				//如果没有设置cookie，返回未授权
+				//如果没有设置cookie，提示需要登录
+				errs := errors.New("请先登录")
 				log.Printf("没有权限，请先登录,%v",err)
-				c.HTML(http.StatusUnauthorized,"views/htmls/404.tmpl",err)
+				c.HTML(http.StatusUnauthorized,"views/htmls/404.tmpl",errs)
 				return
 			}
 		}
 
 		log.Printf("token 字符串:%s\n",tokenStr)
 
-		// Initialize a new instance of `Claims`
 		claims := &auth.CustomClaims{}
-
 		tkn, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (interface{}, error) {
 			return auth.JWTKey , nil
 		})
 		newErr := errors.New("请先登录")
-		if !tkn.Valid {
-
+		if err != nil {
 			c.HTML(http.StatusUnauthorized,"views/htmls/404.tmpl",newErr)
 			return
 		}
-		if err != nil {
+		if err != nil || !tkn.Valid  {
 			if err == jwt.ErrSignatureInvalid {
 				c.HTML(http.StatusUnauthorized,"views/htmls/404.tmpl",newErr)
 				return
@@ -58,7 +53,7 @@ func main() {
 
 	//设置数据库连接信息(mysql:3306),其中mysql是docker里mysql的容器名
 	//在本地主机上运行mysql时改为localhost
-	dns := "root:personblog@(localhost:3306)/myblog?charset=utf8mb4&parseTime=true"
+	dns := "root:personblog123@(mysql:3306)/myblog?charset=utf8mb4&parseTime=true"
 
 	err := db.Init("mysql", dns)
 	if err != nil {
@@ -77,13 +72,20 @@ func main() {
 	//首页
 	router.GET("/", controllers.IndexHandler)
 
+	//用户注册
+	router.POST("/user/register", controllers.UserRegister)
+	router.GET("/user/register", controllers.ShowRegister)
+
 	//登录
 	router.GET("/user/login", controllers.ShowLogin)
 	router.POST("/user/login", controllers.LoginHandler)
 
-	//用户注册
-	router.POST("/user/register", controllers.UserRegister)
-	router.GET("/user/register", controllers.ShowRegister)
+	//退出登录
+	router.GET("/user/logout", controllers.Logout)
+
+	//退出登录
+	router.GET("/user", controllers.UserHandler)
+
 
 	//发表文章
 	router.GET("/article/new", TestAuth(),controllers.NewArticle)

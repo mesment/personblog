@@ -53,16 +53,16 @@ func GetArticleInfoList(offset int, limit int ) (list []*models.ArticleInfo, err
 	return
 }
 
-//添加文章，摘要字段取自文章内容中截取前128个字符
+//添加文章，摘要字段取自文章内容中截取前200个字符
 func AddArticleDetail(title string,categoryid int, content string) error {
 	articleDetail := models.ArticleDetail{}
 	articleDetail.Title = title
 	articleDetail.Content = content
 	articleDetail.ArticleInfo.CategoryId = categoryid
 
-	//截取摘要字段，文章长度不足128时，摘要取文章内容长度，长度大于 128时截取前128码点
+	//截取摘要字段，文章长度不足128时，摘要取文章内容长度，长度大于 200时截取前128码点
 	contentutf8 := []rune(content)
-	minLength := int(math.Min(float64(len(contentutf8)),128.0))
+	minLength := int(math.Min(float64(len(contentutf8)),200.0))
 	articleDetail.Summary = string(contentutf8[:minLength])
 
 	//将文章内容插入数据库

@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"fmt"
-	"gitee/personblog/models"
+	"github.com/mesment/personblog/models"
 	"github.com/gin-gonic/gin"
 	"github.com/mesment/personblog/dao/db"
 	"net/http"
