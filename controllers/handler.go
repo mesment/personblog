@@ -3,7 +3,6 @@ package controllers
 import (
 	"github.com/mesment/personblog/models"
 	"errors"
-	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/mesment/personblog/auth"
@@ -16,17 +15,18 @@ var pageLimit = 5
 
 //服务器出错
 func ServerError(c *gin.Context, err error)  {
-	fmt.Printf("Error:%v",err)
+	log.Printf("Error:%v",err)
 	c.HTML(http.StatusInternalServerError,"views/htmls/500.tmpl",err)
 	return
 }
 //Client出错
 func ClientError(c *gin.Context, errmsg string)  {
-	fmt.Printf("%s",errmsg)
+	log.Printf("%s",errmsg)
 	c.HTML(http.StatusBadRequest,"views/htmls/404.tmpl",errmsg)
 	return
 }
 
+//根据用户的登录状态来进行跳转
 func UserHandler(c *gin.Context)  {
 	username,islogin := IsLogin(c)
 
@@ -66,7 +66,8 @@ func IsLogin(c *gin.Context) (string,bool) {
 
 //从token中获取用户名，获取失败返回默认Guest用户
 func GetDefultUserName(c *gin.Context) (login bool, name string ){
-	var defaultName = "Guest"	//默认用户名
+	//设置默认用户名
+	var defaultName = "Guest"
 
 	name,login = IsLogin(c)
 	if !login {
@@ -92,7 +93,7 @@ func CreateToken(authjwt *auth.JWT, username string , exptime int64 ) (token str
 	//创建token
 	token, err = authjwt.CreateToken(claims)
 	if err != nil {
-		err = fmt.Errorf("Token签名失败%v",err)
+		log.Printf("Token签名失败%v",err)
 		return "", err
 	}
 	log.Printf("Token:%s",token)

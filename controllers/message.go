@@ -1,10 +1,11 @@
 package controllers
 
 import (
-	"fmt"
-	"github.com/mesment/personblog/models"
+	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/mesment/personblog/dao/db"
+	"github.com/mesment/personblog/models"
+	"log"
 	"net/http"
 )
 
@@ -19,7 +20,7 @@ func LeaveMessage(c *gin.Context)  {
 
 	msgs, err := db.GetMessage(10) 	//返回前10条留言
 	if err != nil {
-		fmt.Println("LeaveMessage: 获取留言列表失败%v",err)
+		log.Println("LeaveMessage: 获取留言列表失败%v",err)
 		ServerError(c,err)
 	}
 	data:= make(map[string]interface{})
@@ -38,13 +39,13 @@ func SubmitMessage(c *gin.Context) {
 	//获取留言内容
 	msgContent := c.PostForm("content")
 	if len(msgContent)== 0 || msgContent =="" {
-		err := fmt.Errorf("留言不能为空！！")
+		err := errors.New("留言不能为空！！")
 		ClientError(c,err.Error())
 		return
 	}
 	err := db.AddMessage(username, msgContent)
 	if err != nil {
-		fmt.Printf("提交留言失败,%v", err)
+		log.Printf("提交留言失败,%v", err)
 		ServerError(c,err)
 		return
 	}

@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"fmt"
+	"log"
 	"github.com/gin-gonic/gin"
 	"github.com/mesment/personblog/dao/db"
 	"github.com/mesment/personblog/models"
@@ -34,12 +34,12 @@ func IndexHandler(c *gin.Context) {
 	if err != nil {
 		ServerError(c,err)
 	}
-	fmt.Printf("文章总条数：%d\n",totalRecords)
+	log.Printf("文章总条数：%d\n",totalRecords)
 
 	//设置分页对象
 	page.SetPage(totalRecords,currentPage, pageLimit)
 	//打印page信息
-	fmt.Printf("page info：%v\n",page)
+	log.Printf("page info：%v\n",page)
 
 	//查询返回文章列表
 	articleInfoList,err :=db.GetArticleInfosByPageAndLimit(currentPage,pageLimit)

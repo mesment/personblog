@@ -69,40 +69,40 @@
 			"revisionTime": "2018-08-30T10:17:45Z"
 		},
 		{
-			"checksumSHA1": "z0QnBreUZFt070Z3zPsiT3cegL0=",
+			"checksumSHA1": "UUwpKDafXUnc7Ka3X5q9Ea3guPQ=",
 			"path": "github.com/mesment/personblog",
-			"revision": "f7049c02c17f3cfe6e569fbd0f468429b6b5a052",
-			"revisionTime": "2019-04-11T06:18:54Z"
+			"revision": "1f4df3e963cc64ce32a61524e078c56a91be5b35",
+			"revisionTime": "2019-04-11T12:05:42Z"
 		},
 		{
 			"checksumSHA1": "Lt2kcNreJLH06hC7qGM9uGuiNhI=",
 			"path": "github.com/mesment/personblog/auth",
-			"revision": "f7049c02c17f3cfe6e569fbd0f468429b6b5a052",
-			"revisionTime": "2019-04-11T06:18:54Z"
+			"revision": "1f4df3e963cc64ce32a61524e078c56a91be5b35",
+			"revisionTime": "2019-04-11T12:05:42Z"
 		},
 		{
-			"checksumSHA1": "akQmdnTBG1KVR2vF2fHAUlbXBkY=",
+			"checksumSHA1": "zpTKZQZ+A9slDHxHi+GcqruTQ60=",
 			"path": "github.com/mesment/personblog/controllers",
-			"revision": "f7049c02c17f3cfe6e569fbd0f468429b6b5a052",
-			"revisionTime": "2019-04-11T06:18:54Z"
+			"revision": "1f4df3e963cc64ce32a61524e078c56a91be5b35",
+			"revisionTime": "2019-04-11T12:05:42Z"
 		},
 		{
 			"checksumSHA1": "5qCepVbYrR9liwUvWHS32iwW0mg=",
 			"path": "github.com/mesment/personblog/dao/db",
-			"revision": "f7049c02c17f3cfe6e569fbd0f468429b6b5a052",
-			"revisionTime": "2019-04-11T06:18:54Z"
+			"revision": "1f4df3e963cc64ce32a61524e078c56a91be5b35",
+			"revisionTime": "2019-04-11T12:05:42Z"
 		},
 		{
 			"checksumSHA1": "q+o38e3KCpItZ1KUnKQdtjuiz5c=",
 			"path": "github.com/mesment/personblog/models",
-			"revision": "f7049c02c17f3cfe6e569fbd0f468429b6b5a052",
-			"revisionTime": "2019-04-11T06:18:54Z"
+			"revision": "1f4df3e963cc64ce32a61524e078c56a91be5b35",
+			"revisionTime": "2019-04-11T12:05:42Z"
 		},
 		{
 			"checksumSHA1": "P2roeRauiCjk0UF7efCliOXYms8=",
 			"path": "github.com/mesment/personblog/utils",
-			"revision": "f7049c02c17f3cfe6e569fbd0f468429b6b5a052",
-			"revisionTime": "2019-04-11T06:18:54Z"
+			"revision": "1f4df3e963cc64ce32a61524e078c56a91be5b35",
+			"revisionTime": "2019-04-11T12:05:42Z"
 		},
 		{
 			"checksumSHA1": "j/aP/n+qaMNBUou/a2m2LDJ5q3Q=",

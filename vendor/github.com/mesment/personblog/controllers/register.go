@@ -2,10 +2,10 @@ package controllers
 
 import (
 	"fmt"
+	"log"
 	"github.com/gin-gonic/gin"
 	"github.com/mesment/personblog/auth"
 	"github.com/mesment/personblog/dao/db"
-	"log"
 	"net/http"
 	"time"
 	"github.com/mesment/personblog/models"
@@ -21,12 +21,12 @@ func UserRegister(c *gin.Context)  {
 	if exist {
 		errmsg :=fmt.Sprintf("用户名%s已存在，请更换一个用户名\n",username)
 		ClientError(c , errmsg )
-		//c.AbortWithError(http.StatusBadRequest,errors.New(errmsg))
 		return
 	}
 	//打印用户信息
-	fmt.Printf("username:%s, passwrod:%s\n",username,password)
-	//将用户信息添加到数据库
+	log.Printf("username:%s, passwrod:%s\n",username,password)
+
+	//将用户添加到数据库
 	err :=db.AddUser(username,password)
 	if err != nil {
 		ServerError(c,err)
@@ -35,7 +35,7 @@ func UserRegister(c *gin.Context)  {
 
 	//设置token
 	authjwt:= auth.JWT{}
-	//声明JWT token有效时间单位为3600秒
+	//声明JWT token有效时间单位为1小时(3600秒)
 	expirationTime := time.Now().Add(3600 * time.Second).Unix()
 	//创建token
 	tokenStr,err := CreateToken(&authjwt,username,expirationTime)
@@ -58,7 +58,7 @@ func UserRegister(c *gin.Context)  {
 	m["user"] = user
 	m["islogin"] = true
 	//跳转回首页
-	c.Redirect(http.StatusFound ,"/")
+	c.Redirect(http.StatusFound ,"/user")
 }
 
 

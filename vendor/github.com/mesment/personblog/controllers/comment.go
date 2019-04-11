@@ -1,19 +1,19 @@
 package controllers
 
 import (
-	"fmt"
+	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/mesment/personblog/dao/db"
+	"github.com/mesment/personblog/models"
 	"log"
 	"net/http"
 	"strconv"
-	"github.com/mesment/personblog/models"
 )
 
 //Get 评论页面
 func Comment(c *gin.Context)  {
-	//继续获取文章id
-	//获取登录状态用户名,用户名
+
+	//获取登录状态和用户名
 	var login,username = GetDefultUserName(c)
 
 	var user = models.User{
@@ -22,22 +22,26 @@ func Comment(c *gin.Context)  {
 	articleIdStr := c.Query("article_id")
 	articleId,err:= strconv.Atoi(articleIdStr)
 	if err != nil {
-		fmt.Printf("获取文章评论失败%v",err)
+		log.Printf("获取文章评论列表失败%v",err)
+		ServerError(c,err)
 		return
 	}
 
 	articleDetail,err := db.GetArticleDetailByArticleId(articleId)
 	if err != nil {
-		fmt.Printf("获取文章信息失败",err)
+		log.Printf("获取文章详情信息失败",err)
 		ServerError(c,err)
 		return
 	}
 	//更新详情中的文章ID
 	articleDetail.ArticleInfo.Id = articleId
+
+	//设置返回信息
 	data:= make(map[string]interface{})
 	data["detial"] = articleDetail
 	data["islogin"] = login
 	data["user"] = user
+
 	c.HTML(http.StatusOK,	"views/htmls/comment.tmpl",data)
 }
 
@@ -47,22 +51,27 @@ func PostComment(c *gin.Context)  {
 	//获取用户名
 	var _, user = GetDefultUserName(c)
 
-	//获取文章ID
+	//获取文章ID，评论内容
 	articleIdStr := c.PostForm("article_id")
 	content := c.PostForm("content")
 	articleId,err:= strconv.Atoi(articleIdStr)
+	if err != nil {
+		log.Printf("获取文章ID失败%v",err)
+		ServerError(c, err)
+		return
+	}
 
 	//对评论内容校验
 	if len(content)== 0 || content =="" {
-		err:= fmt.Errorf("评论不能为空！！")
+		err := errors.New("评论不能为空！！")
 		ClientError(c,err.Error())
 		return
 	}
 
-	//将评论添加到数据库
+	//将评论入库
 	err = db.AddComment(user,content,articleId)
 	if err != nil {
-		fmt.Printf("PostComment：提交评论失败 %v",err)
+		log.Printf("保存评论失败 %v",err)
 		ServerError(c,err)
 		return
 	}
