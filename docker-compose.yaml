@@ -2,7 +2,6 @@ version: '3.1'
 services:
 
   personblog:
-
     build: .
     container_name: personblog
     ports:
@@ -10,26 +9,36 @@ services:
     networks:
       - blog_network
     depends_on:
-      - "mysql"
+      - mysql
+      - redis
 
   mysql:
     image: mysql:5.7
     restart: always
     container_name: mysql
     ports:
-      - 3307:3306
+      - 3306:3306
     volumes:
-      - /Users/tommy/data/conf:/etc/mysql/conf.d
-      - /Users/tommy/logs:/logs
-      - /Users/tommy/data:/var/lib/mysql
       - /Users/tommy/data/myscript/:/docker-entrypoint-initdb.d/
     networks:
       - blog_network
     environment:
-      MYSQL_ROOT_PASSWORD: personblog123
-      MYSQL_USER: root
+      MYSQL_ROOT_PASSWORD: Tsyw@110
 
-
+  redis:
+    image: redis
+    restart: always
+    container_name: redis
+    command: redis-server /usr/local/etc/redis/redis.conf
+    ports:
+      - 6379:6379
+    expose:
+      - 6379
+    networks:
+      - blog_network
+    volumes:
+      - $PWD/data:/data
+      - /Users/tommy/redis.conf:/usr/local/etc/redis/redis.conf
 networks:
   blog_network:
     driver: bridge

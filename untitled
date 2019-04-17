@@ -1,0 +1,7 @@
+
+
+
+专业知识扎实，有积极的工作态度，能够独立工作，又有团队精神。具有良好的文化素质，在未来的工作中，我将以充沛的精力，努力工作，稳定地进步自己的工作能力。
+
+
+docker run --name some-mysql -v /User/tommy/conf:/etc/mysql/conf.d -e MYSQL_ROOT_PASSWORD=123-d mysql
