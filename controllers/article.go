@@ -56,7 +56,6 @@ func ArticleDetail(c *gin.Context)  {
 		ServerError(c, err)
 		return
 	}
-
 	//查询文章详情
 	articleDetail,err := db.GetArticleDetailByArticleId(articleId)
 	if err != nil {
@@ -67,16 +66,14 @@ func ArticleDetail(c *gin.Context)  {
 
 	articleDetail.ArticleInfo.Id = articleId
 
-	//查询文章评论列表
-
+	//查询文章评论列表，先从redis里查询，如果失败再从数据库查
 	commentList, err := redis.GetArticleComments(articleIdStr)
-	//commentList,err := db.GetCommentByArticleId(articleId)
 	if err != nil {
-		log.Printf("获取文章评论失败 %v",err)
+		log.Printf("从redis获取文章评论失败 %v",err)
+		commentList,err = db.GetCommentByArticleId(articleId)
 	}
 
-
-	//更新文章阅读次数
+	//从redis获取并更新阅读次数
 	var count int
 	count,err = redis.GetArticleViewCount(articleIdStr)
 	if err != nil {

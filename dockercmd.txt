@@ -1,0 +1,32 @@
+[docker network]
+docker network create -d bridge blog_network
+
+
+[docker mysql]
+docker pull mysql:5.7  //拉取镜像
+docker images			//查看镜像
+
+docker container run -it --detach --name mysql  --network blog_network -p 3307:3306 -v $PWD/data:/var/lib/mysql  -v $PWD/data/myscript/:/docker-entrypoint-initdb.d/ \
+ --env MYSQL_RANDOM_ROOT_PASSWORD=yes mysql:5.7
+
+docker container logs mysql| grep 'GENERATED ROOT PASSWORD: ' | awk -F': ' '{print $2}'
+
+docker container exec -it mysql  bash
+# mysql -u root -p
+mysql>update mysql.user set authentication_string=password('123') where user='root' ;
+mysql> flush privileges;
+mysql> exit;
+
+
+
+[docker redis]
+docker pull redis
+docker images
+docker run -d --name redis -v $PWD/data:/data  --network blog_network -p 6379:6379  redis --requirepass 'redisPassword' --appendonly yes
+
+
+[docker blog]
+docker run  --name personblog -p 80:8080 --network blog_network  personblog
+
+
+

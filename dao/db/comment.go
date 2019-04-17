@@ -6,7 +6,7 @@ import (
 )
 
 //根据文章id获取文章的评论
-func GetCommentByArticleId(articleId int) (commentList []*models.Comment, err error){
+func GetCommentByArticleId(articleId int) (commentList []models.Comment, err error){
 	str :=`select
 					id,content,username,create_time,status,article_id 
 				from 

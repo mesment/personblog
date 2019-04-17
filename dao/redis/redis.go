@@ -45,7 +45,7 @@ func AddArticleComment(articleId string, comment interface{}) error {
 	return nil
 }
 
-//取前100条
+//取文章的前100条评论
 func GetArticleComments(articleId string) (comments []models.Comment,err error ){
 	//get key
 	var commentListKey = fmt.Sprintf("articles:%s:comments",articleId)
