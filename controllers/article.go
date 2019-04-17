@@ -3,12 +3,13 @@ package controllers
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/mesment/personblog/dao/db"
+	"github.com/mesment/personblog/dao/redis"
 	"log"
 	"net/http"
 	"strconv"
 )
 
-//获取发表文章页面
+//Get发表文章页面
 func NewArticle(c *gin.Context)  {
 	categoryList,err := db.GetAllCategory()
 	if err != nil {
@@ -67,17 +68,22 @@ func ArticleDetail(c *gin.Context)  {
 	articleDetail.ArticleInfo.Id = articleId
 
 	//查询文章评论列表
-	commentList,err := db.GetCommentByArticleId(articleId)
+
+	commentList, err := redis.GetArticleComments(articleIdStr)
+	//commentList,err := db.GetCommentByArticleId(articleId)
 	if err != nil {
 		log.Printf("获取文章评论失败 %v",err)
 	}
 
+
 	//更新文章阅读次数
-	err = db.UpdateViewCount(articleId)
+	var count int
+	count,err = redis.GetArticleViewCount(articleIdStr)
 	if err != nil {
-		log.Printf("更新阅读次数失败")
-		//继续执行
+		log.Println(err)
 	}
+	articleDetail.ViewCount = count
+
 	var m map[string]interface{} = make(map[string]interface{},10)
 	m["comments"] = commentList  			//评论列表
 	m["article_detail"] = articleDetail		//文章详情

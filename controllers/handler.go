@@ -1,17 +1,15 @@
 package controllers
 
 import (
-	"github.com/mesment/personblog/models"
 	"errors"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
-	"github.com/mesment/personblog/auth"
+	"github.com/mesment/personblog/middleware"
+	"github.com/mesment/personblog/models"
 	"log"
 	"net/http"
 )
 
-//每页显示条数
-var pageLimit = 5
 
 //服务器出错
 func ServerError(c *gin.Context, err error)  {
@@ -77,12 +75,12 @@ func GetDefultUserName(c *gin.Context) (login bool, name string ){
 }
 
 //创建token
-func CreateToken(authjwt *auth.JWT, username string , exptime int64 ) (token string, err error){
+func CreateToken(authjwt *middleware.JWT, username string , exptime int64 ) (token string, err error){
 	//设置 token有效时间
 	expirationTime := exptime
 
 	//创建JWT claims,包含用户名和超时时间
-	claims := auth.CustomClaims{
+	claims := middleware.CustomClaims{
 		Username:username,
 		StandardClaims:jwt.StandardClaims{
 			ExpiresAt:expirationTime,
@@ -104,7 +102,7 @@ func CreateToken(authjwt *auth.JWT, username string , exptime int64 ) (token str
 //从token中获取用户名，成功返回用户名，失败返回错误信息
 func GetUserNameFromToken(tokenStr string) (username string ,err error) {
 	// 解析token
-	authjwt := auth.JWT{}
+	authjwt := middleware.JWT{}
 
 	claims,err := authjwt.ParseToken(tokenStr)
 	if err != nil {

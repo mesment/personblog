@@ -4,8 +4,8 @@ import (
 	"errors"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
-	"github.com/mesment/personblog/auth"
 	"github.com/mesment/personblog/dao/db"
+	"github.com/mesment/personblog/middleware"
 	"log"
 	"net/http"
 	"time"
@@ -45,12 +45,12 @@ func LoginHandler(c *gin.Context) {
 	}
 
 	//登录成功,设置token
-	authjwt:= auth.JWT{}
+	authjwt:= middleware.JWT{}
 
 	//声明JWT token有效时间1个小时
 	expirationTime := time.Now().Add(3600 * time.Second)
 	//创建JWT claims,包含用户名和超时时间
-	claims := auth.CustomClaims{
+	claims := middleware.CustomClaims{
 		Username:username,
 		StandardClaims:jwt.StandardClaims{
 			ExpiresAt:expirationTime.Unix(),

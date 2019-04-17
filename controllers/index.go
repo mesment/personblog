@@ -1,12 +1,13 @@
 package controllers
 
 import (
-	"log"
 	"github.com/gin-gonic/gin"
 	"github.com/mesment/personblog/dao/db"
 	"github.com/mesment/personblog/models"
 	"github.com/mesment/personblog/utils"
+	"log"
 	"net/http"
+	"github.com/mesment/personblog/pkg/logger"
 )
 
 //IndexHandler:显示文章列表首页
@@ -20,12 +21,12 @@ func IndexHandler(c *gin.Context) {
 	var user = models.User{
 		UserName:username,
 	}
-
-	var page = models.Page{}  	//分页对象，用来存放分页信息
-	var currentPage int			//当前页码
+	logger.Debug("username:%s,来访了。",username)
+	var page = models.NewPage()  //分页对象，用来存放分页信息
+	var curPageNo int			//当前页码
 
 	//根据url获取当前页码
-	currentPage,err := utils.GetPageNo(c)
+	curPageNo,err := utils.GetPageNo(c)
 	if err != nil {
 		ServerError(c,err)
 	}
@@ -37,12 +38,12 @@ func IndexHandler(c *gin.Context) {
 	log.Printf("文章总条数：%d\n",totalRecords)
 
 	//设置分页对象
-	page.SetPage(totalRecords,currentPage, pageLimit)
+	page.SetPage(totalRecords,curPageNo, page.Limit)
 	//打印page信息
 	log.Printf("page info：%v\n",page)
 
 	//查询返回文章列表
-	articleInfoList,err :=db.GetArticleInfosByPageAndLimit(currentPage,pageLimit)
+	articleInfoList,err :=db.GetArticleInfosByPageAndLimit(curPageNo,page.Limit)
 	if err != nil {
 		ServerError(c,err)
 	}

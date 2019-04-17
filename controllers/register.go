@@ -2,9 +2,9 @@ package controllers
 
 import (
 	"fmt"
+	"github.com/mesment/personblog/middleware"
 	"log"
 	"github.com/gin-gonic/gin"
-	"github.com/mesment/personblog/auth"
 	"github.com/mesment/personblog/dao/db"
 	"net/http"
 	"time"
@@ -34,7 +34,7 @@ func UserRegister(c *gin.Context)  {
 	}
 
 	//设置token
-	authjwt:= auth.JWT{}
+	authjwt:= middleware.JWT{}
 	//声明JWT token有效时间单位为1小时(3600秒)
 	expirationTime := time.Now().Add(3600 * time.Second).Unix()
 	//创建token

@@ -25,6 +25,7 @@ func GetArticleDetailByArticleId( articleId int) (articleDetail *models.ArticleD
 	articleDetail = &models.ArticleDetail{}
 
 	err = DB.Get(articleDetail, querStr, articleId)
+
 	//fmt.Printf("ArticleDetial:%v\n",articleDetail)
 	return
 }

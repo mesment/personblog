@@ -1,0 +1,3 @@
+2019-04-16 14:39:20.37 WARN[testing.go/testing.tRunner:865] file this  a warning
+2019-04-16 14:39:20.37 ERROR[testing.go/testing.tRunner:865] file this  a error
+2019-04-16 14:39:20.37 FATAL[testing.go/testing.tRunner:865] file this is a fatal log

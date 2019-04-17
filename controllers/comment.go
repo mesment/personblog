@@ -3,6 +3,7 @@ package controllers
 import (
 	"errors"
 	"github.com/gin-gonic/gin"
+	"github.com/mesment/personblog/dao/redis"
 	"github.com/mesment/personblog/dao/db"
 	"github.com/mesment/personblog/models"
 	"log"
@@ -68,21 +69,21 @@ func PostComment(c *gin.Context)  {
 		return
 	}
 
+	comment := models.Comment{
+		UserName:user,
+		Content:content,
+	}
+	err = redis.AddArticleComment(articleIdStr,comment)
+	if err != nil {
+		log.Println(err)
+	}
+
 	//将评论入库
 	err = db.AddComment(user,content,articleId)
 	if err != nil {
 		log.Printf("保存评论失败 %v",err)
 		ServerError(c,err)
 		return
-	}
-	//更新文章评论次数
-	err = db.UpdateCommentCount(articleId)
-	if err != nil {
-		log.Printf("更新文章评论次数失败")
-	}
-	err = db.UpdateViewCount(articleId)
-	if err != nil {
-		log.Printf("更新文章阅读次数失败")
 	}
 
 	//拼接跳转回文章详情页面
